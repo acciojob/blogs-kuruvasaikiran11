@@ -19,52 +19,40 @@ public class ImageService {
 
     public Image addImage(Integer blogId, String description, String dimensions){
         //add an image to the blog
-        Image image = new Image();
         Blog blog = blogRepository2.findById(blogId).get();
-        image.setBlog(blog);
-        image.setDescription(description);
-        image.setDimensions(dimensions);
-
-        List<Image> listOfImages = blog.getImageList();
-
-        if(Objects.isNull(listOfImages))
-            listOfImages = new ArrayList<>();
-
-        listOfImages.add(image);
-
-        blog.setImageList(listOfImages);
-
-        imageRepository2.save(image);
+        Image image = new Image(blog,description,dimensions);
+        blog.getImageList().add(image);
         blogRepository2.save(blog);
-
         return image;
     }
 
     public void deleteImage(Integer id){
-        Image image = imageRepository2.findById(id).get();
-        Blog blog = image.getBlog();
-
-        List<Image> imageList = blog.getImageList();
-
-        imageList.remove(image);
-
-        blog.setImageList(imageList);
-
-        imageRepository2.save(image);
+        imageRepository2.deleteById(id);
     }
 
-    public int countImagesInScreen(Image image, String screenDimensions) {
+    public int countImagesInScreen(Integer id, String screenDimensions) {
         //Find the number of images of given dimensions that can fit in a screen having `screenDimensions`
-        if(image == null)
-            return 0;
-        int dim = Integer.parseInt(image.getDimensions());
-        int totaldim = Integer.parseInt(screenDimensions);
+        String [] scrarray = screenDimensions.split("X"); //A=Length   X    B=Breadth
+//        if(!imageRepository2.findById(id).isPresent()){
+//            throw new Exception();
+//        }
+        Image image = imageRepository2.findById(id).get();
 
-        return totaldim/dim;
+        String imageDimensions = image.getDimensions();
+        String [] imgarray = imageDimensions.split("X");
+
+        int scrl = Integer.parseInt(scrarray[0]); //A -- > integer
+        int scrb = Integer.parseInt(scrarray[1]); //B -- > integer
+
+        int imgl = Integer.parseInt(imgarray[0]); //A -- > integer
+        int imgb = Integer.parseInt(imgarray[1]); //B -- > integer
+
+        return numOfImages(scrl,scrb,imgl,imgb);
     }
 
-    public Image findById(int id) {
-        Image image = imageRepository2.findById(id).get();
-        return image;
+    private int numOfImages(int scrl, int scrb, int imgl, int imgb) {
+        int lenC = scrl/imgl; //
+        int lenB = scrb/imgb;
+        return lenC*lenB;
     }
 }

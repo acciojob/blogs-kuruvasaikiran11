@@ -20,7 +20,8 @@ public class Image {
     public Image() {
     }
 
-    public Image(String description, String dimensions) {
+    public Image(Blog blog, String description, String dimensions) {
+        this.blog = blog;
         this.description = description;
         this.dimensions = dimensions;
     }

@@ -18,17 +18,15 @@ public class BlogService {
     @Autowired
     UserRepository userRepository1;
 
-    @Autowired
-    ImageService imageService;
-
-    public void createAndReturnBlog(Integer userId, String title, String content) {
+    public Blog createAndReturnBlog(Integer userId, String title, String content) {
         //create a blog at the current time
-        Blog blog = new Blog(title, content, new Date());
+
         User user = userRepository1.findById(userId).get();
-        List<Blog> listOfBlogs = user.getBlogList();
-        listOfBlogs.add(blog);
-        user.setBlogList(listOfBlogs);
+        Blog blog = new Blog(user, title, content);
+        blog.setPubDate(new Date());
         userRepository1.save(user);
+        user.getBlogList().add(blog);
+        return blog;
     }
 
     public void deleteBlog(int blogId){
